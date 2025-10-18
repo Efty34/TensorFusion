@@ -1003,14 +1003,6 @@ MOSI: Multimodal Corpus of Sentiment Intensity and Subjectivity Analysis in Onli
 arXiv preprint arXiv:1606.06259.
 ```
 
-### Framework
-
-```
-MultiBench: Multiscale Benchmarks for Multimodal Representation Learning
-https://github.com/pliang279/MultiBench
-```
-
----
 
 ## Usage Instructions
 
@@ -1105,53 +1097,6 @@ print(f"Best epoch: {checkpoint['epoch']}")
 print(f"Validation accuracy: {checkpoint['val_acc']:.4f}")
 ```
 
----
-
-## Project Timeline
-
-### Week 1: Data Understanding
-
-- Loaded CMU-MOSI dataset
-- Analyzed 3 modalities and 2,199 samples
-- Visualized sentiment distributions
-- Exported modality-specific files
-
-### Week 2: Text Modality
-
-- Implemented text binary classification (✅ 74% accuracy)
-- Implemented text 5-class classification (✅ 38% accuracy)
-- Established baseline TFN architecture
-
-### Week 3: Video Modality
-
-- Implemented video binary classification (✅ 73% accuracy)
-- Implemented video 5-class classification (⚠️ 20% vs 30.4% target)
-- Applied multiple optimization strategies
-
-### Week 4: Audio Modality
-
-- Resolved CUDA/memory issues (switched to CPU)
-- Implemented audio binary classification (✅ 65% accuracy)
-- Implemented audio 5-class classification (⚠️ 17-20% vs 27.5% target)
-- Enhanced architecture with BiGRU + Attention
-
-### Week 5: Bimodal Fusion
-
-- Implemented Text + Audio binary classification (✅ 75.4% accuracy, 76.1% F1)
-- Implemented Text + Audio 5-class classification (✅ 40.5% accuracy)
-- Demonstrated value of multimodal fusion over unimodal baselines
-- 2-way tensor fusion: 16,641 dims (binary), 66,049 dims (5-class)
-
-### Week 6: Trimodal Fusion (Complete TFN)
-
-- Implemented Text + Video + Audio binary classification (🎯 76.0% accuracy, 76.4% F1)
-- Implemented Text + Video + Audio 5-class classification (🎯 42% accuracy)
-- Resolved memory overflow with embed_dim optimization (128 → 32)
-- 3-way tensor fusion: 35,937 dimensions (memory-efficient)
-- **Achieved the paper's main contribution**: Complete trimodal tensor fusion
-- Demonstrated clear performance progression: Unimodal < Bimodal < Trimodal
-
----
 
 ## Acknowledgments
 
