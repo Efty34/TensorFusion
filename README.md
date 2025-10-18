@@ -1003,32 +1003,74 @@ MOSI: Multimodal Corpus of Sentiment Intensity and Subjectivity Analysis in Onli
 arXiv preprint arXiv:1606.06259.
 ```
 
-
 ## Usage Instructions
 
-### 1. Environment Setup
+### 1. Clone the Repository
 
 ```bash
-# Install dependencies
-pip install torch numpy scikit-learn matplotlib seaborn
+# Clone the repository
+git clone https://github.com/Efty34/TensorFusion.git
 
 # Navigate to project directory
-cd h:\4-1_Labs\ML\Codes\TensorFusion
+cd TensorFusion
 ```
 
-### 2. Data Preparation
+### 2. Environment Setup
+
+We provide an `environment.yml` file for easy setup with Conda/Anaconda.
+
+#### Option A: Using Conda (Recommended)
 
 ```bash
-# Run data exploration notebook
-jupyter notebook 0_Mosi_Dataset.ipynb
+# Create environment from environment.yml
+conda env create -f environment.yml
 
-# Execute all cells to:
-# - Load CMU-MOSI dataset
-# - Visualize distributions
-# - Export modality-specific files
+# Activate the environment
+conda activate multimodal
+
+# Verify installation
+python --version  # Should show Python 3.8.20
 ```
 
-### 3. Training Models
+#### Option B: Manual Installation with pip
+
+```bash
+# Create a virtual environment (optional but recommended)
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On Linux/Mac:
+source venv/bin/activate
+
+# Install PyTorch (CPU version)
+pip install torch==1.12.1 torchvision==0.13.1 torchaudio==0.12.1
+
+# Install other dependencies
+pip install numpy==1.24.4 pandas==2.0.3 matplotlib==3.7.5 seaborn==0.13.2
+pip install scikit-learn==1.3.2 scipy==1.10.1
+pip install jupyter ipykernel torchinfo==1.8.0 tqdm gdown
+```
+
+### 3. Data Preparation
+
+```bash
+# Launch Jupyter Notebook
+jupyter notebook
+
+# Open and run: 0_Mosi_Dataset.ipynb
+
+# This notebook will:
+# - Load CMU-MOSI dataset from MultiBench
+# - Visualize sentiment distributions
+# - Export modality-specific files (text, video, audio)
+# - Create data/exported_modalities/ directory with .pkl files
+```
+
+**Note**: The first time you run this, the MultiBench framework will download the CMU-MOSI dataset automatically.
+
+### 4. Training Models
 
 #### Binary Classification (Unimodal)
 
@@ -1076,27 +1118,89 @@ jupyter notebook 10_trimodal_binary.ipynb
 jupyter notebook 11_trimodal_5class.ipynb
 ```
 
-### 4. Checkpoint Loading
+#### Early Fusion (Baseline Comparison)
+
+```bash
+# Simple concatenation fusion for binary classification
+jupyter notebook 12_early_fusion_binary.ipynb
+```
+
+### 5. Loading Pre-trained Models
+
+If you want to load pre-trained models instead of training from scratch:
 
 ```python
 import torch
 
-# Load unimodal model
+# Load unimodal text model
 checkpoint = torch.load('MultiBench/best_text_unimodal.pt')
 model.load_state_dict(checkpoint['model_state_dict'])
 
-# Load bimodal model
+# Load bimodal model (Text + Audio)
 checkpoint = torch.load('MultiBench/best_bimodal_binary.pt')
 bimodal_model.load_state_dict(checkpoint['model_state_dict'])
 
-# Load trimodal model (complete TFN)
+# Load trimodal model (Text + Video + Audio - Complete TFN)
 checkpoint = torch.load('MultiBench/best_trimodal_binary.pt')
 trimodal_model.load_state_dict(checkpoint['model_state_dict'])
 
+# Load early fusion model
+checkpoint = torch.load('MultiBench/best_early_fusion_binary.pt')
+early_fusion_model.load_state_dict(checkpoint['model_state_dict'])
+
+# View model metadata
 print(f"Best epoch: {checkpoint['epoch']}")
 print(f"Validation accuracy: {checkpoint['val_acc']:.4f}")
+print(f"Validation F1 score: {checkpoint['val_f1']:.4f}")
 ```
 
+### 6. Quick Start Example
+
+For a quick test run to see if everything is working:
+
+```bash
+# 1. Clone and setup
+git clone https://github.com/Efty34/TensorFusion.git
+cd TensorFusion
+conda env create -f environment.yml
+conda activate multimodal
+
+# 2. Prepare data (run once)
+jupyter notebook 0_Mosi_Dataset.ipynb
+# Execute all cells and wait for data export to complete
+
+# 3. Train a simple model (text unimodal)
+jupyter notebook 1_text_unimodal.ipynb
+# Execute all cells to train and evaluate
+
+# 4. You should see ~74% accuracy on the test set!
+```
+
+### 7. System Requirements
+
+- **Python**: 3.8.x
+- **RAM**: Minimum 8GB (16GB recommended for trimodal models)
+- **Storage**: ~2GB for dataset and models
+- **GPU**: Not required (CPU training is supported, though slower)
+- **OS**: Windows, Linux, or macOS
+
+### 8. Troubleshooting
+
+#### Issue: "ModuleNotFoundError: No module named 'MultiBench'"
+
+**Solution**: Navigate to the project root directory (`TensorFusion/`) before running notebooks.
+
+#### Issue: "FileNotFoundError: mosi_text.pkl not found"
+
+**Solution**: Run `0_Mosi_Dataset.ipynb` first to export the modality files.
+
+#### Issue: "CUDA out of memory"
+
+**Solution**: The code automatically falls back to CPU. You can also reduce `batch_size` in the notebooks.
+
+#### Issue: Environment creation fails
+
+**Solution**: Try manual pip installation (Option B in Environment Setup)
 
 ## Acknowledgments
 
