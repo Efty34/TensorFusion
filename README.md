@@ -770,6 +770,23 @@ TensorFusion/
 │   ├── Target: ~42% accuracy
 │   └── Checkpoint: best_trimodal_5class.pt
 │
+├── EARLY FUSION (Baseline Comparison)
+│
+├── 12_early_fusion_binary.ipynb  # Simple Concatenation Fusion
+│   ├── Method: [z_text; z_video; z_audio] → 384 dims
+│   ├── Baseline: 38x fewer params than tensor fusion
+│   ├── Result: ~72-74% accuracy (~2-4% below tensor fusion)
+│   └── Checkpoint: best_early_fusion_binary.pt
+│
+├── REGRESSION MODELS (Sentiment Intensity Prediction)
+│
+├── 13_text_regression.ipynb      # Text Regression (Continuous Sentiment)
+│   ├── Task: Predict sentiment scores from -3 to +3
+│   ├── Loss: L1Loss (MAE)
+│   ├── Metrics: MAE, RMSE, Pearson Correlation
+│   ├── Target: MAE = 0.99, Correlation = 0.63 (TFN Paper)
+│   └── Checkpoint: best_text_regression.pt
+│
 └── MultiBench/                    # Framework directory
     ├── data/
     │   └── exported_modalities/
@@ -791,7 +808,13 @@ TensorFusion/
     │
     ├── TRIMODAL CHECKPOINTS
     ├── best_trimodal_binary.pt   # Text+Video+Audio binary checkpoint
-    └── best_trimodal_5class.pt   # Text+Video+Audio 5-class checkpoint
+    ├── best_trimodal_5class.pt   # Text+Video+Audio 5-class checkpoint
+    │
+    ├── EARLY FUSION CHECKPOINTS
+    ├── best_early_fusion_binary.pt  # Early fusion baseline checkpoint
+    │
+    └── REGRESSION CHECKPOINTS
+        └── best_text_regression.pt  # Text regression checkpoint (MAE optimization)
 ```
 
 ---
@@ -837,6 +860,27 @@ TensorFusion/
 - 📈 Fusion significantly improves over weaker unimodal baselines
 - 🎯 Text+Audio bimodal performs comparable to full trimodal (40% vs 42%)
 - 💡 Text is the strongest single modality for fine-grained sentiment
+
+### Regression Performance (Sentiment Intensity Prediction)
+
+**Task**: Predict continuous sentiment scores from **-3 (highly negative)** to **+3 (highly positive)**
+
+| Model               | MAE | RMSE | Pearson Correlation | Paper MAE | Paper Corr | Status    |
+| ------------------- | --- | ---- | ------------------- | --------- | ---------- | --------- |
+| **Text Regression** | TBD | TBD  | TBD                 | 0.99      | 0.63       | 🎯 Target |
+
+**Key Differences from Classification**:
+
+- **Loss Function**: L1Loss (MAE) instead of CrossEntropy/BCE
+- **Output**: Continuous values [-3, +3] instead of discrete classes
+- **Metrics**: MAE, RMSE, Correlation instead of Accuracy/F1
+- **Use Case**: Fine-grained sentiment intensity estimation
+
+**Evaluation Metrics Explained**:
+
+- **MAE (Mean Absolute Error)**: Average prediction error (lower is better, 0.99 = ~1 unit off on 7-point scale)
+- **RMSE (Root Mean Squared Error)**: Penalizes larger errors more heavily
+- **Pearson Correlation**: How well predictions correlate with actual values (-1 to +1, closer to 1 is better)
 
 ---
 
@@ -1125,6 +1169,14 @@ jupyter notebook 11_trimodal_5class.ipynb
 jupyter notebook 12_early_fusion_binary.ipynb
 ```
 
+#### Regression (Sentiment Intensity Prediction)
+
+```bash
+# Text regression - predict continuous sentiment scores [-3, +3]
+# Target: MAE = 0.99, Pearson Correlation = 0.63 (TFN Paper)
+jupyter notebook 13_text_regression.ipynb
+```
+
 ### 5. Loading Pre-trained Models
 
 If you want to load pre-trained models instead of training from scratch:
@@ -1148,10 +1200,19 @@ trimodal_model.load_state_dict(checkpoint['model_state_dict'])
 checkpoint = torch.load('MultiBench/best_early_fusion_binary.pt')
 early_fusion_model.load_state_dict(checkpoint['model_state_dict'])
 
-# View model metadata
+# Load regression model (text sentiment intensity)
+checkpoint = torch.load('MultiBench/best_text_regression.pt')
+regression_model.load_state_dict(checkpoint['model_state_dict'])
+
+# View model metadata (Classification)
 print(f"Best epoch: {checkpoint['epoch']}")
 print(f"Validation accuracy: {checkpoint['val_acc']:.4f}")
 print(f"Validation F1 score: {checkpoint['val_f1']:.4f}")
+
+# View model metadata (Regression)
+print(f"Best epoch: {checkpoint['epoch']}")
+print(f"Validation MAE: {checkpoint['val_mae']:.4f}")
+print(f"Validation Correlation: {checkpoint['val_corr']:.4f}")
 ```
 
 ### 6. Quick Start Example
